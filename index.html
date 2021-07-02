@@ -1,0 +1,135 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>Gesfogo</title>
+
+    <!-- JS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+    <script src="https://unpkg.com/leaflet@1.6.0/dist/leaflet.js" integrity="sha512-gZwIG9x3wUXg2hdXF6+rVkLF/0Vi9U8D2Ntg4Ga5I5BZpVkVxlJWbSQtXPSiUTtC0TjtGOmxa1AJPuV0CPthew==" crossorigin=""></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet.freedraw/2.0.1/leaflet-freedraw.web.js"></script>
+    <script> window.$ = window.jQuery = require('jquery');</script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+    <script src="./js/jquery-1.9.1.min.js"></script>
+    <script src="./js/jquery-ui.js"></script>
+    <script src="bower_components/leaflet-slider/SliderControl.js"></script>
+    <script src="https://unpkg.com/leaflet-geotag-photo/dist/Leaflet.GeotagPhoto.min.js"></script>
+    <script src="https://unpkg.com/leaflet-geotag-photo@0.5.1/dist/Leaflet.GeotagPhoto.min.js"></script>
+    <script src="./externalPackages/leaflet-control-window/L.Control.Window.js"></script>
+
+    <!-- CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.6.0/dist/leaflet.css" integrity="sha512-xwE/Az9zrjBIphAcBb3F6JVqxf46+CDLwfLMHloNu6KEQCAWi6HcDUbeOfBIptF7tcCzusKFjFw2yuvEpDL9wQ==" crossorigin="" />
+    <link rel="stylesheet" href="./css/style.css">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet-geotag-photo/dist/Leaflet.GeotagPhoto.css" />
+    <link rel="stylesheet" href="https://unpkg.com/leaflet-geotag-photo@0.5.1/dist/Leaflet.GeotagPhoto.css" />
+    <link rel="stylesheet" href="./css/jquery-ui.css" />
+    <link rel="stylesheet" href="./externalPackages/leaflet-control-window/L.Control.Window.css" />
+
+    <body>
+        <table class="container">
+            <tr>
+                <td class="left">
+                    <!-- MainVisor -->
+                    <div id="MV" class="mainVisor">
+                        <h4 id="mainvisortitle" class="text-center">MainVisor</h4>
+                        <button id="fullscream" class="btn btn-success mr-1" onclick="FullscreenMV();"> Fullscreen Mode </button>
+                        <div style="vertical-align: middle;">
+                            <h5 class="titulo">Draw Tools</h5>
+                            <select id='mode' class="custom-select btn-success">
+                                    <option value="nothing">View</option>
+                                    <option id="drawfl" value="draw-fl">Draw Fire lines</option>
+                                    <option id="drawsl" value="draw-sl">Draw Shadow lines</option>
+                                    <option value="delete">Delete lines</option>
+                            </select>
+                            
+                        </div>
+                        
+                        <div id="map"></div>
+                        <div id="slider-timestamp"></div>
+                        <input type="hidden" id="btn_hidden_angle" value="">';
+                        <input type="hidden" id="btn_hidden_yaw_lat" value="">';
+                        <input type="hidden" id="btn_hidden_yaw_long" value="">';
+                        <!--Time line-->
+                        <br><br><br>
+                        <div class="divTimeLine">
+                            <form>
+                                <div class="form-row">
+                                  <div class="col-3 text-center">
+                                    <label for="timeline-init">Timeline init</label>
+                                    <input type='datetime-local' id='timeline-init' class="form-control text-center" placeholder="Timeline init">
+                                  </div>
+                                  <div class="col-3 text-center">
+                                    <label for="timeline-end">Timeline end</label>
+                                    <input type='datetime-local' id='timeline-end' class="form-control text-center" placeholder="Timeline end">
+                                  </div>
+                                  <div class="col-3 text-center">
+                                    <label for="step">Step</label>
+                                    <input type='number' class="form-control text-center" id='step' min='5' max='1440' placeholder="Max = 1440 (1 day)">
+                                  </div>
+                                  <div class="col-3 text-center">
+                                    <label for="step" type="hidden">Confirm </label>
+                                    <button class="btn btn-success form-control text-center" id="confirmTimeline">Confirm Interval</button>
+                                  </div>
+                                </div>
+                              </form>
+                        </div>
+                        
+                    </div>
+                </td>
+                <td class="right">
+                    <div id="NV" class="top">
+                        <button class="btn btn-success mr-1" onclick="revertDrawns()">Revert Draws</button>
+                        <button class="btn btn-success mr-1" onclick="saveDrawns()">Save Draws</button>
+                        <!-- NodeVisor -->
+                        <div>
+                            <!-- OPTIONS-->
+                            <div class="text-center">
+                                <h4 class="text-center">NodeVisor</h4>
+                                
+                                <input type="hidden" id="SI" value="">
+                    
+                                <button id="fullscream" class="btn btn-success mr-2" onclick="FullscreenNV();">Fullscreen Mode</button>
+                            </div>
+                            <br><br><br><br>
+                            <div class="text-center">
+                                
+                                <table class="nodeVisorTable" id="nv_table_1" value="valor da tabela"></table><br>
+                                <table class="nodeVisorTable mb-1" id="nv_table_2" value="valor da tabela"></table>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="bottom">
+                        <!-- ImageVisor -->
+                        <div id="IV" class="imageVisor">
+                            <!-- OPTIONS-->
+                            <div class="text-center">
+                                <h4 class="text-center">ImageVisor</h4>
+                                <button id="buttVis" type="button" class="btn btn-success float-left m-1">Visible Image</button>
+                                <button id="buttTerm" type="button" class="btn btn-success float-left m-1">Termal Image</button>
+                                <input type="hidden" id="imgs" value="">
+                                <button id="fullscream" class="btn btn-success mr-2" onclick="FullscreenIV();">Fullscreen Mode</button>
+                            </div>
+                            
+                            <br><br><br>
+                            <img style="vertical-align: middle;" class="imageFromVisor" id="imgIV"/>
+                            
+                            
+                            
+                        </div>
+                    </div>
+                </td>
+            </tr>
+        </table>
+
+        <script src="./js/functions.js"></script>
+        <script src="./js/filterDates.js"></script>
+        <script src="./js/timeline.js"></script>
+    </body>
+
+</html>
